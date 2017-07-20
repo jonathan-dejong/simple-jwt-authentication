@@ -1,0 +1,9 @@
+{
+    "config": {
+        "vendor-dir": "includes/vendor"
+    },
+    "require": {
+        "firebase/php-jwt": "^3.0",
+		"donatj/phpuseragentparser": "*"
+    }
+}
