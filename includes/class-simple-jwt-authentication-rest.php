@@ -94,7 +94,7 @@ class Simple_Jwt_Authentication_Rest {
 		if ( ! $secret_key ) {
 			return new WP_Error(
 				'jwt_auth_bad_config',
-				__( 'JWT is not configurated properly, please contact the admin', 'simple-jwt-authentication' ),
+				__( 'JWT is not configurated properly, please contact the admin. The key is missing.', 'simple-jwt-authentication' ),
 				array(
 					'status' => 403,
 				)
@@ -260,7 +260,7 @@ class Simple_Jwt_Authentication_Rest {
 		if ( ! $secret_key ) {
 			return new WP_Error(
 				'jwt_auth_bad_config',
-				__( 'JWT is not configurated properly, please contact the admin', 'simple-jwt-authentication' ),
+				__( 'JWT is not configurated properly, please contact the admin. The key is missing.', 'simple-jwt-authentication' ),
 				array(
 					'status' => 403,
 				)
