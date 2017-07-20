@@ -1,0 +1,192 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-20 14:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#: includes/class-simple-jwt-authentication-api.php:16
+#: includes/class-simple-jwt-authentication-rest.php:310
+msgid "Unknown"
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:97
+#: includes/class-simple-jwt-authentication-rest.php:263
+msgid ""
+"JWT is not configurated properly, please contact the admin. The key is "
+"missing."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:236
+msgid "Authorization header not found."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:251
+msgid "Authorization header malformed."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:278
+msgid "The iss do not match with this server"
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:288
+msgid "User ID not found in the token"
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:300
+#: includes/class-simple-jwt-authentication-rest.php:324
+msgid "Token has been revoked."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:413
+msgid "<strong>Error:</strong> Username or email not specified."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:430
+msgid "<strong>Error:</strong> Invalid username."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:449
+#: includes/class-simple-jwt-authentication-rest.php:457
+msgid "<strong>Error:</strong> Resetting password is not allowed."
+msgstr ""
+
+#: includes/class-simple-jwt-authentication-rest.php:506
+msgid ""
+"<strong>Success:</strong> an email for selecting a new password has been "
+"sent."
+msgstr ""
+
+#: includes/admin/class-simple-jwt-authentication-settings.php:56
+msgid "Basic configuration"
+msgstr ""
+
+#: includes/admin/class-simple-jwt-authentication-settings.php:63
+msgid "Secret Key"
+msgstr ""
+
+#: includes/admin/class-simple-jwt-authentication-settings.php:71
+#, php-format
+msgid "Enable %s"
+msgstr ""
+
+#: includes/admin/class-simple-jwt-authentication-settings.php:112
+#, php-format
+msgid ""
+"This is all you need to start using JWT authentication.<br /> You can also "
+"specify these in wp-config.php instead using %1$s %2$s"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:1
+msgid "Simple JWT Authentication API Tokens"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:5
+msgid "Token UUID"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:6
+msgid "Expires"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:7
+msgid "Last used"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:8
+msgid "By IP"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:9
+msgid "Browser"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:26
+msgid "Lookup"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:27
+#, php-format
+msgid ""
+"<strong>Platform</strong> %1$s. <strong>Browser:</strong> %2$s. <strong>"
+"Browser version:</strong> %3$s"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:29
+msgid "Revokes this token from being used any further."
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:29
+msgid "Revoke"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:35
+msgid "Doing this will require the user to login again on all devices."
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:35
+msgid "Revoke all tokens"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:36
+msgid "Doing this will not affect logged in devices for this user."
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:36
+msgid "Remove all expired tokens"
+msgstr ""
+
+#: includes/admin/views/user-token-ui.php:41
+msgid "No tokens generated."
+msgstr ""
+
+#: includes/admin/views/settings/enable-cors.php:4
+#: includes/admin/views/settings/secret-key.php:4
+msgid "Defined in wp-config.php"
+msgstr ""
+
+#: includes/admin/views/settings/page.php:8
+msgid "Getting started"
+msgstr ""
+
+#: includes/admin/views/settings/page.php:10
+#, php-format
+msgid ""
+"To get started check out the <a href=\"%s\" target=\"_blank\" "
+"rel=\"nofollow\">documentation</a>"
+msgstr ""
+
+#: includes/admin/views/settings/secret-key.php:6
+msgid "Should be a long string of letters, numbers and symbols."
+msgstr ""
+
+#. Name of the plugin
+msgid "Simple JWT Authentication"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Extends the WP REST API using JSON Web Tokens Authentication as an "
+"authentication method."
+msgstr ""
+
+#. URI of the plugin
+msgid "http://github.com/jonathan-dejong/simple-jwt-authentication"
+msgstr ""
+
+#. Author of the plugin
+msgid "Jonathan de Jong"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://github.com/jonathan-dejong"
+msgstr ""
