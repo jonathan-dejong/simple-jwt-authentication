@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Simple JWT Authentication\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-20 14:40+0000\n"
-"PO-Revision-Date: 2017-07-20 14:59+0000\n"
+"POT-Creation-Date: 2017-10-03 07:43+0000\n"
+"PO-Revision-Date: 2017-10-03 07:45+0000\n"
 "Last-Translator: Jonathan de Jong <info@tigerton.se>\n"
 "Language-Team: Swedish\n"
 "Language: sv-SE\n"
@@ -12,6 +12,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco - https://localise.biz/"
+
+#: includes/admin/class-simple-jwt-authentication-profile.php:44
+msgid "All tokens have been revoked."
+msgstr "Alla åtkomsttokens har upphävts."
+
+#: includes/admin/class-simple-jwt-authentication-profile.php:46
+#, php-format
+msgid "The token %s has been revoked."
+msgstr "Åtkomsttoken %s har upphävts."
+
+#: includes/admin/class-simple-jwt-authentication-profile.php:48
+msgid "All expired tokens have been removed."
+msgstr "Alla utgångna åtkomsttokens har tagits bort."
+
+#. Name of the plugin
+msgid "Simple JWT Authentication"
+msgstr "Simple JWT Authentication"
+
+#. Description of the plugin
+msgid ""
+"Extends the WP REST API using JSON Web Tokens Authentication as an "
+"authentication method."
+msgstr ""
+"Bygger ut WP REST API med JSON Web Tokens Authentication som ett sätt att "
+"autentisera användare."
+
+#. URI of the plugin
+msgid "http://github.com/jonathan-dejong/simple-jwt-authentication"
+msgstr "http://github.com/jonathan-dejong/simple-jwt-authentication"
+
+#. Author of the plugin
+msgid "Jonathan de Jong"
+msgstr "Jonathan de Jong"
+
+#. Author URI of the plugin
+msgid "http://github.com/jonathan-dejong"
+msgstr "https://github.com/jonathan-dejong"
 
 #: includes/class-simple-jwt-authentication-api.php:16
 #: includes/class-simple-jwt-authentication-rest.php:310
@@ -116,11 +153,11 @@ msgstr "Av IP"
 msgid "Browser"
 msgstr "Webbläsare"
 
-#: includes/admin/views/user-token-ui.php:26
+#: includes/admin/views/user-token-ui.php:30
 msgid "Lookup"
 msgstr "Slå upp"
 
-#: includes/admin/views/user-token-ui.php:27
+#: includes/admin/views/user-token-ui.php:31
 #, php-format
 msgid ""
 "<strong>Platform</strong> %1$s. <strong>Browser:</strong> %2$s. <strong>"
@@ -129,31 +166,31 @@ msgstr ""
 "<strong>Plattform</strong> %1$s. <strong>Webbläsare:</strong> %2$s. <strong>"
 "Webbläsarversion:</strong> %3$s"
 
-#: includes/admin/views/user-token-ui.php:29
+#: includes/admin/views/user-token-ui.php:33
 msgid "Revokes this token from being used any further."
 msgstr "Upphäver denna åtkomsttoken från att fortsätta användas."
 
-#: includes/admin/views/user-token-ui.php:29
+#: includes/admin/views/user-token-ui.php:33
 msgid "Revoke"
 msgstr "Upphäv"
 
-#: includes/admin/views/user-token-ui.php:35
+#: includes/admin/views/user-token-ui.php:39
 msgid "Doing this will require the user to login again on all devices."
 msgstr "Detta kräver att användaren loggar in igen på alla enheter."
 
-#: includes/admin/views/user-token-ui.php:35
+#: includes/admin/views/user-token-ui.php:39
 msgid "Revoke all tokens"
 msgstr "Upphäv alla åtkomsttokens"
 
-#: includes/admin/views/user-token-ui.php:36
+#: includes/admin/views/user-token-ui.php:40
 msgid "Doing this will not affect logged in devices for this user."
 msgstr "Detta påverkar inte inloggade enheter för den här användaren."
 
-#: includes/admin/views/user-token-ui.php:36
+#: includes/admin/views/user-token-ui.php:40
 msgid "Remove all expired tokens"
 msgstr "Ta bort alla utgångna åtkomsttokens"
 
-#: includes/admin/views/user-token-ui.php:41
+#: includes/admin/views/user-token-ui.php:45
 msgid "No tokens generated."
 msgstr "Inga åtkomsttokens har skapats."
 
@@ -178,25 +215,3 @@ msgstr ""
 #: includes/admin/views/settings/secret-key.php:6
 msgid "Should be a long string of letters, numbers and symbols."
 msgstr "Bör vara en lång sträng av bokstäver, siffror och symboler."
-
-#. Name of the plugin
-msgid "Simple JWT Authentication"
-msgstr ""
-
-#. Description of the plugin
-msgid ""
-"Extends the WP REST API using JSON Web Tokens Authentication as an "
-"authentication method."
-msgstr ""
-
-#. URI of the plugin
-msgid "http://github.com/jonathan-dejong/simple-jwt-authentication"
-msgstr ""
-
-#. Author of the plugin
-msgid "Jonathan de Jong"
-msgstr ""
-
-#. Author URI of the plugin
-msgid "http://github.com/jonathan-dejong"
-msgstr ""
