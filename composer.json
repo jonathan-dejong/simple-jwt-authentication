@@ -1,5 +1,5 @@
 {
-	"name": "jonathan-dejong/simple-jwt-authentication",
+    "name": "jonathan-dejong/simple-jwt-authentication",
     "description": "Extends the WP REST API using JSON Web Tokens Authentication as an authentication method",
     "config": {
         "vendor-dir": "includes/vendor"
