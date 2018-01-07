@@ -223,7 +223,8 @@ class Simple_Jwt_Authentication_Rest {
 		 * Looking for the HTTP_AUTHORIZATION header, if not present just
 		 * return the user.
 		 */
-		$auth = isset( $_SERVER['HTTP_AUTHORIZATION'] ) ? $_SERVER['HTTP_AUTHORIZATION'] : false;
+		$header_name = defined("SIMPLE_JWT_AUTHENTICATION_HEADER_NAME") ? SIMPLE_JWT_AUTHENTICATION_HEADER_NAME : "HTTP_AUTHORIZATION";
+		$auth = isset( $_SERVER[$header_name] ) ? $_SERVER[$header_name] : false;
 
 		// Double check for different auth header string (server dependent)
 		if ( ! $auth ) {
