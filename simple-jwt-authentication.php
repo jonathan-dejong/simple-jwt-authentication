@@ -3,7 +3,7 @@
  * Plugin Name: Simple JWT Authentication
  * Plugin URI:  http://github.com/jonathan-dejong/simple-jwt-authentication
  * Description: Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
- * Version:     1.1
+ * Version:     1.2
  * Author:      Jonathan de Jong
  * Author URI:  http://github.com/jonathan-dejong
  * License:     GPL-2.0+
