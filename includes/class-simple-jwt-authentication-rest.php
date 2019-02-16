@@ -1,7 +1,6 @@
 <?php
 /**
  * Most of the core functionality of the plugin happen here.
- * At least the hooks for them!..
  *
  * @since 1.0
  */
@@ -29,16 +28,45 @@ class Simple_Jwt_Authentication_Rest {
 	 * @since 1.0
 	 */
 	public function __construct( $plugin_name, $plugin_version ) {
-		$this->plugin_name = $plugin_name;
+		$this->plugin_name    = $plugin_name;
 		$this->plugin_version = $plugin_version;
-		$this->api_version = 1;
-		$this->namespace = $plugin_name . '/v' . $this->api_version;
+		$this->api_version    = 1;
+		$this->namespace      = $plugin_name . '/v' . $this->api_version;
 
+		$this->init();
+
+	}
+
+
+	/**
+	 * Initialize this class with hooks.
+	 *
+	 * @return void
+	 */
+	public function init() {
 		add_action( 'rest_api_init', array( $this, 'add_api_routes' ) );
 		add_filter( 'rest_api_init', array( $this, 'add_cors_support' ) );
-		add_filter( 'determine_current_user', array( $this, 'determine_current_user' ), 10 );
 		add_filter( 'rest_pre_dispatch', array( $this, 'rest_pre_dispatch' ), 10, 2 );
+		$this->gutenberg_compatibility();
+	}
 
+
+	/**
+	 * Fix gutenberg compatiblity.
+	 * Make sure the JWT token is only looked for and applied if the user is not already logged in.
+	 * TODO: Look into if we really need to use cookies for this...?
+	 *
+	 * @return void
+	 */
+	public function gutenberg_compatibility() {
+		// If logged in cookie exists bail early.
+		foreach ( $_COOKIE as $name => $value ) {
+			if ( 0 === strpos( $name, 'wordpress_logged_in_' ) ) {
+				return;
+			}
+		}
+
+		add_filter( 'determine_current_user', array( $this, 'determine_current_user' ), 10 );
 	}
 
 
@@ -46,25 +74,41 @@ class Simple_Jwt_Authentication_Rest {
 	 * Add the endpoints to the API
 	 */
 	public function add_api_routes() {
-		register_rest_route( $this->namespace, 'token', array(
-			'methods' => 'POST',
-			'callback' => array( $this, 'generate_token' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'token',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'generate_token' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, 'token/validate', array(
-			'methods' => 'POST',
-			'callback' => array( $this, 'validate_token' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'token/validate',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'validate_token' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, 'token/revoke', array(
-			'methods' => 'POST',
-			'callback' => array( $this, 'revoke_token' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'token/revoke',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'revoke_token' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, 'token/resetpassword', array(
-			'methods' => 'POST',
-			'callback' => array( $this, 'reset_password' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'token/resetpassword',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'reset_password' ),
+			)
+		);
 	}
 
 	/**
@@ -87,8 +131,8 @@ class Simple_Jwt_Authentication_Rest {
 	 */
 	public function generate_token( $request ) {
 		$secret_key = Simple_Jwt_Authentication_Api::get_key();
-		$username = $request->get_param( 'username' );
-		$password = $request->get_param( 'password' );
+		$username   = $request->get_param( 'username' );
+		$password   = $request->get_param( 'password' );
 
 		/** First thing, check the secret key if not exist return a error*/
 		if ( ! $secret_key ) {
@@ -116,17 +160,17 @@ class Simple_Jwt_Authentication_Rest {
 		}
 
 		// Valid credentials, the user exists create the according Token.
-		$issued_at = time();
+		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
-		$expire = apply_filters( 'jwt_auth_expire', $issued_at + (DAY_IN_SECONDS * 7), $issued_at );
-		$uuid = wp_generate_uuid4();
+		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at );
+		$uuid       = wp_generate_uuid4();
 
 		$token = array(
 			'uuid' => $uuid,
-			'iss' => get_bloginfo( 'url' ),
-			'iat' => $issued_at,
-			'nbf' => $not_before,
-			'exp' => $expire,
+			'iss'  => get_bloginfo( 'url' ),
+			'iat'  => $issued_at,
+			'nbf'  => $not_before,
+			'exp'  => $expire,
 			'data' => array(
 				'user' => array(
 					'id' => $user->data->ID,
@@ -138,26 +182,26 @@ class Simple_Jwt_Authentication_Rest {
 		$token = JWT::encode( apply_filters( 'jwt_auth_token_before_sign', $token, $user ), $secret_key );
 
 		// Setup some user meta data we can use for our UI.
-		$jwt_data = get_user_meta( $user->data->ID, 'jwt_data', true ) ?: array();
-		$user_ip = Simple_Jwt_Authentication_Api::get_ip();
+		$jwt_data   = get_user_meta( $user->data->ID, 'jwt_data', true ) ?: array();
+		$user_ip    = Simple_Jwt_Authentication_Api::get_ip();
 		$jwt_data[] = array(
-			'uuid' => $uuid,
+			'uuid'      => $uuid,
 			'issued_at' => $issued_at,
-			'expires' => $expire,
-			'ip' => $user_ip,
-			'ua' => $_SERVER['HTTP_USER_AGENT'],
+			'expires'   => $expire,
+			'ip'        => $user_ip,
+			'ua'        => $_SERVER['HTTP_USER_AGENT'],
 			'last_used' => time(),
 		);
 		update_user_meta( $user->data->ID, 'jwt_data', apply_filters( 'simple_jwt_auth_save_user_data', $jwt_data ) );
 
 		// The token is signed, now create the object with no sensible user data to the client.
 		$data = array(
-			'token' => $token,
-			'user_id' => $user->data->ID,
-			'user_email' => $user->data->user_email,
-			'user_nicename' => $user->data->user_nicename,
+			'token'             => $token,
+			'user_id'           => $user->data->ID,
+			'user_email'        => $user->data->user_email,
+			'user_nicename'     => $user->data->user_nicename,
 			'user_display_name' => $user->data->display_name,
-			'token_expires' => $expire,
+			'token_expires'     => $expire,
 		);
 
 		// Let the user modify the data before send it back.
@@ -223,8 +267,8 @@ class Simple_Jwt_Authentication_Rest {
 		 * Looking for the HTTP_AUTHORIZATION header, if not present just
 		 * return the user.
 		 */
-		$header_name = defined("SIMPLE_JWT_AUTHENTICATION_HEADER_NAME") ? SIMPLE_JWT_AUTHENTICATION_HEADER_NAME : "HTTP_AUTHORIZATION";
-		$auth = isset( $_SERVER[$header_name] ) ? $_SERVER[$header_name] : false;
+		$header_name = defined( 'SIMPLE_JWT_AUTHENTICATION_HEADER_NAME' ) ? SIMPLE_JWT_AUTHENTICATION_HEADER_NAME : 'HTTP_AUTHORIZATION';
+		$auth        = isset( $_SERVER[ $header_name ] ) ? $_SERVER[ $header_name ] : false;
 
 		// Double check for different auth header string (server dependent)
 		if ( ! $auth ) {
@@ -308,11 +352,11 @@ class Simple_Jwt_Authentication_Rest {
 			// Loop through and check wether we have the current token uuid in the users meta.
 			foreach ( $jwt_data as $key => $token_data ) {
 				if ( $token_data['uuid'] == $token->uuid ) {
-					$user_ip = ! empty( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : __( 'Unknown', 'simple-jwt-authentication' );
+					$user_ip                       = ! empty( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : __( 'Unknown', 'simple-jwt-authentication' );
 					$jwt_data[ $key ]['last_used'] = time();
-					$jwt_data[ $key ]['ua'] = $_SERVER['HTTP_USER_AGENT'];
-					$jwt_data[ $key ]['ip'] = $user_ip;
-					$valid_token = true;
+					$jwt_data[ $key ]['ua']        = $_SERVER['HTTP_USER_AGENT'];
+					$jwt_data[ $key ]['ip']        = $user_ip;
+					$valid_token                   = true;
 					break;
 				}
 				$valid_token = false;
@@ -371,14 +415,14 @@ class Simple_Jwt_Authentication_Rest {
 			}
 		}
 
-		$tokens = get_user_meta( $token->data->user->id, 'jwt_data', true ) ?: false;
+		$tokens     = get_user_meta( $token->data->user->id, 'jwt_data', true ) ?: false;
 		$token_uuid = $token->uuid;
 
 		if ( $tokens ) {
 			foreach ( $tokens as $key => $token_data ) {
 				if ( $token_data['uuid'] == $token_uuid ) {
 					unset( $tokens[ $key ] );
-					update_user_meta( $token->data->user->id , 'jwt_data', $tokens );
+					update_user_meta( $token->data->user->id, 'jwt_data', $tokens );
 					return array(
 						'code' => 'jwt_auth_revoked_token',
 						'data' => array(
@@ -410,9 +454,9 @@ class Simple_Jwt_Authentication_Rest {
 		$username = $request->get_param( 'username' );
 		if ( ! $username ) {
 			return array(
-				'code' => 'jwt_auth_invalid_username',
+				'code'    => 'jwt_auth_invalid_username',
 				'message' => __( '<strong>Error:</strong> Username or email not specified.', 'simple-jwt-authentication' ),
-				'data' => array(
+				'data'    => array(
 					'status' => 403,
 				),
 			);
@@ -427,9 +471,9 @@ class Simple_Jwt_Authentication_Rest {
 		do_action( 'lostpassword_post' );
 		if ( ! $user_data ) {
 			return array(
-				'code' => 'jwt_auth_invalid_username',
+				'code'    => 'jwt_auth_invalid_username',
 				'message' => __( '<strong>Error:</strong> Invalid username.', 'simple-jwt-authentication' ),
-				'data' => array(
+				'data'    => array(
 					'status' => 403,
 				),
 			);
@@ -446,25 +490,25 @@ class Simple_Jwt_Authentication_Rest {
 
 		if ( ! $allow ) {
 			return array(
-				'code' => 'jwt_auth_reset_password_not_allowed',
+				'code'    => 'jwt_auth_reset_password_not_allowed',
 				'message' => __( '<strong>Error:</strong> Resetting password is not allowed.', 'simple-jwt-authentication' ),
-				'data' => array(
+				'data'    => array(
 					'status' => 403,
 				),
 			);
-		} else if ( is_wp_error( $allow ) ) {
+		} elseif ( is_wp_error( $allow ) ) {
 			return array(
-				'code' => 'jwt_auth_reset_password_not_allowed',
+				'code'    => 'jwt_auth_reset_password_not_allowed',
 				'message' => __( '<strong>Error:</strong> Resetting password is not allowed.', 'simple-jwt-authentication' ),
-				'data' => array(
+				'data'    => array(
 					'status' => 403,
 				),
 			);
 		}
 
 		$key = get_password_reset_key( $user_data );
-		
-		$message = __( 'Someone requested that the password be reset for the following account:' ) . "\r\n\r\n";
+
+		$message  = __( 'Someone requested that the password be reset for the following account:' ) . "\r\n\r\n";
 		$message .= network_home_url( '/' ) . "\r\n\r\n";
 		$message .= sprintf( __( 'Username: %s' ), $user_login ) . "\r\n\r\n";
 		$message .= __( 'If this was a mistake, just ignore this email and nothing will happen.' ) . "\r\n\r\n";
@@ -481,7 +525,7 @@ class Simple_Jwt_Authentication_Rest {
 
 		$title = sprintf( __( '[%s] Password Reset' ), $blogname );
 
-		$title = apply_filters( 'retrieve_password_title', $title );
+		$title   = apply_filters( 'retrieve_password_title', $title );
 		$message = apply_filters( 'retrieve_password_message', $message, $key );
 
 		if ( $message && ! wp_mail( $user_email, $title, $message ) ) {
@@ -489,9 +533,9 @@ class Simple_Jwt_Authentication_Rest {
 		}
 
 		return array(
-			'code' => 'jwt_auth_password_reset',
+			'code'    => 'jwt_auth_password_reset',
 			'message' => __( '<strong>Success:</strong> an email for selecting a new password has been sent.', 'simple-jwt-authentication' ),
-			'data' => array(
+			'data'    => array(
 				'status' => 200,
 			),
 		);
