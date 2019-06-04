@@ -7,6 +7,7 @@
 
 // Require the JWT library.
 use \Firebase\JWT\JWT;
+use \Ramsey\Uuid\Uuid;
 
 class Simple_Jwt_Authentication_Rest {
 
@@ -123,6 +124,24 @@ class Simple_Jwt_Authentication_Rest {
 	}
 
 	/**
+	* Creates a new UUID to track the token. Attempts to generate the UUID using
+	* the WP built-in method first and falls back to ramsey/uuid
+	*
+	* @since 1.2
+	* @return String UUID
+	*/
+	private function generate_uuid() {
+	  if( function_exists( 'wp_generate_uuid4' ) ) {
+	    //Use the built in UUID generator
+	    return wp_generate_uuid4();
+	  }
+	  else {
+	    //Old version of WP, use a different UUID generator
+	    return Uuid::uuid4()->toString();
+	  }
+	}
+
+	/**
 	 * Get the user and password in the request body and generate a JWT
 	 *
 	 * @param object $request a WP REST request object
@@ -162,8 +181,8 @@ class Simple_Jwt_Authentication_Rest {
 		// Valid credentials, the user exists create the according Token.
 		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
-		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at );
-		$uuid       = wp_generate_uuid4();
+		$expire = apply_filters( 'jwt_auth_expire', $issued_at + (DAY_IN_SECONDS * 7), $issued_at );
+		$uuid = $this->generate_uuid();
 
 		$token = array(
 			'uuid' => $uuid,
