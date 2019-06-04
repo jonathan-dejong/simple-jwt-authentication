@@ -63,7 +63,7 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function user_token_ui( $user ) {
-		if ( current_user_can( 'edit_user' ) ) {
+		if ( current_user_can( 'edit_users' ) ) {
 			$tokens = get_user_meta( $user->ID, 'jwt_data', true ) ?: false;
 			include plugin_dir_path( __FILE__ ) . 'views/user-token-ui.php';
 
@@ -78,7 +78,7 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_revoke_token() {
-		if ( $this->user && current_user_can( 'edit_user' ) && ! empty( $_GET['revoke_token'] ) ) {
+		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_token'] ) ) {
 			$tokens = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
 			$request_token = $_GET['revoke_token'];
 
@@ -108,7 +108,7 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_revoke_all_tokens() {
-		if ( $this->user && current_user_can( 'edit_user' ) && ! empty( $_GET['revoke_all_tokens'] ) ) {
+		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_all_tokens'] ) ) {
 			delete_user_meta( $this->user->ID, 'jwt_data' );
 			$current_url = get_home_url().$_SERVER['REQUEST_URI'];
 
@@ -130,7 +130,7 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_remove_expired_tokens() {
-		if ($this->user && current_user_can( 'edit_user' ) && ! empty( $_GET['remove_expired_tokens'] ) ) {
+		if ($this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['remove_expired_tokens'] ) ) {
 
 			$tokens = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
 			if ( $tokens ) {
