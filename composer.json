@@ -6,7 +6,8 @@
       "vendor-dir": "includes/vendor"
     },
     "require": {
-      "firebase/php-jwt": "^3.0",
-			"donatj/phpuseragentparser": "*"
+        "firebase/php-jwt": "^3.0",
+		"donatj/phpuseragentparser": "*",
+        "ramsey/uuid": "^3.8"
     }
 }
