@@ -95,6 +95,15 @@ class Simple_Jwt_Authentication_Rest {
 
 		register_rest_route(
 			$this->namespace,
+			'token/refresh',
+			array(
+				'methods'  => 'POST',
+				'callback' => array( $this, 'refresh_token' ),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'token/revoke',
 			array(
 				'methods'  => 'POST',
@@ -413,6 +422,83 @@ class Simple_Jwt_Authentication_Rest {
 				)
 			);
 		}
+	}
+
+
+	/**
+	 * Get a JWT in the header and generate a JWT
+	 *
+	 * @return mixed Either a WP_Error or an object with a JWT token.
+	 */
+	public function refresh_token() {
+		//Check if the token is valid and get user information
+		$token = $this->validate_token( false );
+
+		if ( is_wp_error( $token ) ) {
+			return $token;
+		}
+
+		// Get the Secret Key
+		$secret_key = Simple_Jwt_Authentication_Api::get_key();
+		if ( ! $secret_key ) {
+			return new WP_Error(
+				'jwt_auth_bad_config',
+				__( 'JWT is not configurated properly, please contact the admin. The key is missing.', 'simple-jwt-authentication' ),
+				array(
+					'status' => 403,
+				)
+			);
+		}
+
+		$user = new WP_User($token->data->user->id);
+
+		// The user exists create the according Token.
+		$issued_at  = time();
+		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
+		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at );
+		$uuid       = wp_generate_uuid4();
+
+		$token = array(
+			'uuid' => $uuid,
+			'iss'  => get_bloginfo( 'url' ),
+			'iat'  => $issued_at,
+			'nbf'  => $not_before,
+			'exp'  => $expire,
+			'data' => array(
+				'user' => array(
+					'id' => $user->data->ID,
+				),
+			),
+		);
+
+		// Let the user modify the token data before the sign.
+		$token = JWT::encode( apply_filters( 'jwt_auth_token_before_sign', $token, $user ), $secret_key );
+
+		// Setup some user meta data we can use for our UI.
+		$jwt_data   = get_user_meta( $user->data->ID, 'jwt_data', true ) ?: array();
+		$user_ip    = Simple_Jwt_Authentication_Api::get_ip();
+		$jwt_data[] = array(
+			'uuid'      => $uuid,
+			'issued_at' => $issued_at,
+			'expires'   => $expire,
+			'ip'        => $user_ip,
+			'ua'        => $_SERVER['HTTP_USER_AGENT'],
+			'last_used' => time(),
+		);
+		update_user_meta( $user->data->ID, 'jwt_data', apply_filters( 'simple_jwt_auth_save_user_data', $jwt_data ) );
+
+		// The token is signed, now create the object with no sensible user data to the client.
+		$data = array(
+			'token'             => $token,
+			'user_id'           => $user->data->ID,
+			'user_email'        => $user->data->user_email,
+			'user_nicename'     => $user->data->user_nicename,
+			'user_display_name' => $user->data->display_name,
+			'token_expires'     => $expire,
+		);
+
+		// Let the user modify the data before send it back.
+		return apply_filters( 'jwt_auth_token_before_dispatch', $data, $user );
 	}
 
 
