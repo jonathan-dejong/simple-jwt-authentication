@@ -139,7 +139,7 @@ class Simple_Jwt_Authentication_Rest {
 	* @since 1.2
 	* @return String UUID
 	*/
-	private function generate_uuid() {
+	private static function generate_uuid() {
 	  if( function_exists( 'wp_generate_uuid4' ) ) {
 	    //Use the built in UUID generator
 	    return wp_generate_uuid4();
@@ -188,12 +188,34 @@ class Simple_Jwt_Authentication_Rest {
 		}
 
 		// Valid credentials, the user exists create the according Token.
+        return self::generate_user_token($user->data->ID);
+
+	}
+    
+    public static function generate_user_token($user_id){
+        
+        $secret_key = Simple_Jwt_Authentication_Api::get_key();
+        
+		/** First thing, check the secret key if not exist return a error*/
+		if ( ! $secret_key ) {
+			return new WP_Error(
+				'jwt_auth_bad_config',
+				__( 'JWT is not configurated properly, please contact the admin. The key is missing.', 'simple-jwt-authentication' ),
+				array(
+					'status' => 403,
+				)
+			);
+		}
+        
+        /** Try to get the user*/
+        if ( !$user = get_user_by('ID', $user_id ) ) return false;
+
 		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
 		$expire = apply_filters( 'jwt_auth_expire', $issued_at + (DAY_IN_SECONDS * 7), $issued_at, $user->data->ID );
 		if ( !$expire ) return false;
         
-		$uuid = $this->generate_uuid();
+		$uuid = self::generate_uuid();
 
 		$token = array(
 			'uuid' => $uuid,
@@ -236,7 +258,7 @@ class Simple_Jwt_Authentication_Rest {
 
 		// Let the user modify the data before send it back.
 		return apply_filters( 'jwt_auth_token_before_dispatch', $data, $user );
-	}
+    }
 
 	/**
 	 * This is our Middleware to try to authenticate the user according to the
@@ -458,7 +480,7 @@ class Simple_Jwt_Authentication_Rest {
 		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
 		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at );
-		$uuid       = wp_generate_uuid4();
+		$uuid       = self::generate_uuid();
 
 		$token = array(
 			'uuid' => $uuid,
