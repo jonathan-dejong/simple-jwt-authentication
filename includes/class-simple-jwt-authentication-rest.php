@@ -190,7 +190,9 @@ class Simple_Jwt_Authentication_Rest {
 		// Valid credentials, the user exists create the according Token.
 		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
-		$expire = apply_filters( 'jwt_auth_expire', $issued_at + (DAY_IN_SECONDS * 7), $issued_at );
+		$expire = apply_filters( 'jwt_auth_expire', $issued_at + (DAY_IN_SECONDS * 7), $issued_at, $user->data->ID );
+        if ( !$expire ) return false;
+        
 		$uuid = $this->generate_uuid();
 
 		$token = array(
