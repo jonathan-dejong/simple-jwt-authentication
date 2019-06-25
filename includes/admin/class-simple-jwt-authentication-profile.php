@@ -20,16 +20,16 @@ class Simple_Jwt_Authentication_Profile {
 		$this->plugin_name = $plugin_name;
 		$this->plugin_version = $plugin_version;
 
-		add_action( 'init', array( $this, 'set_edited_user' ) );
+		add_action( 'current_screen', array( $this, 'set_edited_user' ), 5 );
 
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'edit_user_profile', array( $this, 'user_token_ui' ), 20 );
 		add_action( 'show_user_profile', array( $this, 'user_token_ui' ), 20 );
-		add_action( 'init', array( $this, 'maybe_revoke_token' ) );
+		add_action( 'current_screen', array( $this, 'maybe_revoke_token' ) );
 		add_action( 'show_user_profile', array( $this, 'maybe_revoke_token' ) );
-		add_action( 'init', array( $this, 'maybe_revoke_all_tokens' ) );
+		add_action( 'current_screen', array( $this, 'maybe_revoke_all_tokens' ) );
 		add_action( 'show_user_profile', array( $this, 'maybe_revoke_all_tokens' ) );
-		add_action( 'init', array( $this, 'maybe_remove_expired_tokens' ) );
+		add_action( 'current_screen', array( $this, 'maybe_remove_expired_tokens' ) );
 		add_action( 'show_user_profile', array( $this, 'maybe_remove_expired_tokens' ) );
 
 	}
@@ -78,6 +78,7 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_revoke_token() {
+
 		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_token'] ) ) {
 			$tokens = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
 			$request_token = $_GET['revoke_token'];
@@ -158,12 +159,23 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.1.1
 	 */
 	public function set_edited_user() {
-		$user = null;
-		if( ! empty( $_GET['user_id'] ) ){
-			// If ID is incorrect, user will not be found, and function return null
-			$user = get_userdata( (int)$_GET['user_id'] );
-			if($user) $user = $user->data;
-		}
+        $current_screen = get_current_screen();
+        $user_id = null;
+        $user = null;
+        
+        if ($current_screen->id == 'profile'){
+            $user_id = get_current_user_id();
+        }elseif ($current_screen->id == 'user-edit'){
+            $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
+        }
+
+        if (!$user_id) return;
+
+        // If ID is incorrect, user will not be found, and function return null
+        $user = get_userdata( $user_id );
+        if (!$user) return;
+ 
+        $user = $user->data;
 		$this->user = $user;
 	}
 }
