@@ -83,15 +83,8 @@ class Simple_Jwt_Authentication_Settings {
 	 * @since 1.0
 	 */
 	public function settings_secret_callback() {
-        $is_global = Simple_Jwt_Authentication_Api::is_global( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY' );
-
-        // Only display the Secret key, if it is not set in the wp-config file.
-        // In Multisite Installations it could be a security issue to display a global secret to other sites admins
-        $secret_key = __( '-- HIDDEN --', 'simple-jwt-authentication' );
-        if (!$is_global) {
-	        $secret_key = Simple_Jwt_Authentication_Api::get_key();
-        }
-
+		$secret_key = Simple_Jwt_Authentication_Api::get_key();
+		$is_global = Simple_Jwt_Authentication_Api::is_global( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY' );
 		include plugin_dir_path( __FILE__ ) . 'views/settings/secret-key.php';
 
 	}
