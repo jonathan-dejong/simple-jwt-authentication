@@ -17,7 +17,7 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function __construct( $plugin_name, $plugin_version ) {
-		$this->plugin_name = $plugin_name;
+		$this->plugin_name    = $plugin_name;
 		$this->plugin_version = $plugin_version;
 
 		add_action( 'init', array( $this, 'set_edited_user' ) );
@@ -34,9 +34,11 @@ class Simple_Jwt_Authentication_Profile {
 
 	}
 
-
-
-
+	/**
+	 * Maybe show admin notice to the user.
+	 *
+	 * @return void
+	 */
 	public function admin_notices() {
 		if ( empty( $_GET['jwtupdated'] ) ) {
 			return;
@@ -44,17 +46,17 @@ class Simple_Jwt_Authentication_Profile {
 
 		$class = 'notice-success';
 
-		if ( ! empty( $_GET['revoked'] ) && 'all' == $_GET['revoked'] ) {
+		if ( ! empty( $_GET['revoked'] ) && 'all' === $_GET['revoked'] ) {
 			$message = __( 'All tokens have been revoked.', 'simple-jwt-authentication' );
 		} elseif ( ! empty( $_GET['revoked'] ) ) {
+			// TranslatorS: %s is a token ID.
 			$message = sprintf( __( 'The token %s has been revoked.', 'simple-jwt-authentication' ), $_GET['revoked'] );
 		} elseif ( ! empty( $_GET['removed'] ) ) {
 			$message = __( 'All expired tokens have been removed.', 'simple-jwt-authentication' );
 		}
-		echo sprintf( '<div class="notice is-dismissible %1$s"><p>%2$s</p></div>', $class, $message );
+		echo sprintf( '<div class="notice is-dismissible %1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
 
 	}
-
 
 	/**
 	 * Adds a token UI metabox to each user.
@@ -68,9 +70,7 @@ class Simple_Jwt_Authentication_Profile {
 			include plugin_dir_path( __FILE__ ) . 'views/user-token-ui.php';
 
 		}
-
 	}
-
 
 	/**
 	 * Check if we should revoke a token.
@@ -79,24 +79,27 @@ class Simple_Jwt_Authentication_Profile {
 	 */
 	public function maybe_revoke_token() {
 		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_token'] ) ) {
-			$tokens = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
+			$tokens        = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
 			$request_token = $_GET['revoke_token'];
 
 			if ( $tokens ) {
 				foreach ( $tokens as $key => $token ) {
-					if ( $token['uuid'] == $_GET['revoke_token'] ) {
+					if ( $token['uuid'] === $_GET['revoke_token'] ) {
 						unset( $tokens[ $key ] );
-						update_user_meta( $this->user->ID , 'jwt_data', $tokens );
+						update_user_meta( $this->user->ID, 'jwt_data', $tokens );
 						break;
 					}
 				}
 			}
 
-			$current_url = get_home_url().$_SERVER['REQUEST_URI'];
-			$redirect_url = add_query_arg( array(
-				'jwtupdated' => 1,
-				'revoked' => $request_token,
-			), remove_query_arg( array( 'revoke_token' ), $current_url ) );
+			$current_url  = get_home_url() . $_SERVER['REQUEST_URI'];
+			$redirect_url = add_query_arg(
+				array(
+					'jwtupdated' => 1,
+					'revoked'    => $request_token,
+				),
+				remove_query_arg( array( 'revoke_token' ), $current_url )
+			);
 			wp_safe_redirect( $redirect_url );
 			exit;
 		}
@@ -110,12 +113,15 @@ class Simple_Jwt_Authentication_Profile {
 	public function maybe_revoke_all_tokens() {
 		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_all_tokens'] ) ) {
 			delete_user_meta( $this->user->ID, 'jwt_data' );
-			$current_url = get_home_url().$_SERVER['REQUEST_URI'];
+			$current_url = get_home_url() . $_SERVER['REQUEST_URI'];
 
-			$redirect_url = add_query_arg( array(
-				'jwtupdated' => 1,
-				'revoked' => 'all',
-			), remove_query_arg( array( 'revoke_all_tokens' ), $current_url ) );
+			$redirect_url = add_query_arg(
+				array(
+					'jwtupdated' => 1,
+					'revoked'    => 'all',
+				),
+				remove_query_arg( array( 'revoke_all_tokens' ), $current_url )
+			);
 			wp_safe_redirect( $redirect_url );
 			exit;
 
@@ -123,14 +129,13 @@ class Simple_Jwt_Authentication_Profile {
 
 	}
 
-
 	/**
 	 * Check if we should revoke a token.
 	 *
 	 * @since 1.0
 	 */
 	public function maybe_remove_expired_tokens() {
-		if ($this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['remove_expired_tokens'] ) ) {
+		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['remove_expired_tokens'] ) ) {
 
 			$tokens = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
 			if ( $tokens ) {
@@ -139,14 +144,17 @@ class Simple_Jwt_Authentication_Profile {
 						unset( $tokens[ $key ] );
 					}
 				}
-				update_user_meta( $this->user->ID , 'jwt_data', $tokens );
+				update_user_meta( $this->user->ID, 'jwt_data', $tokens );
 			}
 
-			$current_url = get_home_url().$_SERVER['REQUEST_URI'];
-			$redirect_url = add_query_arg( array(
-				'jwtupdated' => 1,
-				'removed' => 'all',
-			), remove_query_arg( array( 'remove_expired_tokens' ), $current_url ) );
+			$current_url  = get_home_url() . $_SERVER['REQUEST_URI'];
+			$redirect_url = add_query_arg(
+				array(
+					'jwtupdated' => 1,
+					'removed'    => 'all',
+				),
+				remove_query_arg( array( 'remove_expired_tokens' ), $current_url )
+			);
 			wp_safe_redirect( $redirect_url );
 			exit;
 		}
@@ -159,10 +167,12 @@ class Simple_Jwt_Authentication_Profile {
 	 */
 	public function set_edited_user() {
 		$user = null;
-		if( ! empty( $_GET['user_id'] ) ){
+		if ( ! empty( $_GET['user_id'] ) ) {
 			// If ID is incorrect, user will not be found, and function return null
-			$user = get_userdata( (int)$_GET['user_id'] );
-			if($user) $user = $user->data;
+			$user = get_userdata( (int) $_GET['user_id'] );
+			if ( $user ) {
+				$user = $user->data;
+			}
 		}
 		$this->user = $user;
 	}

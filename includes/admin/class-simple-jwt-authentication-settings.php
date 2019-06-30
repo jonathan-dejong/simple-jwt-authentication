@@ -17,7 +17,7 @@ class Simple_Jwt_Authentication_Settings {
 	 * @since 1.0
 	 */
 	public function __construct( $plugin_name, $plugin_version ) {
-		$this->plugin_name = $plugin_name;
+		$this->plugin_name    = $plugin_name;
 		$this->plugin_version = $plugin_version;
 
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
@@ -68,6 +68,7 @@ class Simple_Jwt_Authentication_Settings {
 
 		add_settings_field(
 			'enable_cors',
+			// translators: %s is a link to CORS docs.
 			sprintf( __( 'Enable %s', 'simple-jwt-authentication' ), '<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS" target="_blank" rel="nofollow">CORS</a>' ),
 			array( $this, 'settings_cors_callback' ),
 			'simple_jwt_authentication',
@@ -84,7 +85,7 @@ class Simple_Jwt_Authentication_Settings {
 	 */
 	public function settings_secret_callback() {
 		$secret_key = Simple_Jwt_Authentication_Api::get_key();
-		$is_global = Simple_Jwt_Authentication_Api::is_global( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY' );
+		$is_global  = Simple_Jwt_Authentication_Api::is_global( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY' );
 		include plugin_dir_path( __FILE__ ) . 'views/settings/secret-key.php';
 
 	}
@@ -97,7 +98,7 @@ class Simple_Jwt_Authentication_Settings {
 	 */
 	public function settings_cors_callback() {
 		$enable_cors = Simple_Jwt_Authentication_Api::get_cors();
-		$is_global = Simple_Jwt_Authentication_Api::is_global( 'SIMPLE_JWT_AUTHENTICATION_CORS_ENABLE' );
+		$is_global   = Simple_Jwt_Authentication_Api::is_global( 'SIMPLE_JWT_AUTHENTICATION_CORS_ENABLE' );
 		include plugin_dir_path( __FILE__ ) . 'views/settings/enable-cors.php';
 
 	}
@@ -109,7 +110,7 @@ class Simple_Jwt_Authentication_Settings {
 	 * @since 1.0
 	 */
 	public function settings_section_callback() {
-		echo sprintf( __( 'This is all you need to start using JWT authentication.<br /> You can also specify these in wp-config.php instead using %1$s %2$s', 'simple-jwt-authentication' ), "<br /><br /><code>define( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY', YOURKEY );</code>", "<br /><br /><code>define( 'SIMPLE_JWT_AUTHENTICATION_CORS_ENABLE', true );</code>" );
+		echo sprintf( __( 'This is all you need to start using JWT authentication.<br /> You can also specify these in wp-config.php instead using %1$s %2$s', 'simple-jwt-authentication' ), "<br /><br /><code>define( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY', YOURKEY );</code>", "<br /><br /><code>define( 'SIMPLE_JWT_AUTHENTICATION_CORS_ENABLE', true );</code>" ); // phpcs:ignore
 
 	}
 
