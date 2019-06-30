@@ -17,8 +17,8 @@ Easily extends the WP REST API using JSON Web Tokens Authentication as an authen
 == Installation ==
 
 1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Go to the settings page under Settings > Simple JWT Authentication to setup the plugin.
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Go to the settings page under Settings > Simple JWT Authentication to setup the plugin.
 
 == Screenshots ==
 
@@ -29,6 +29,9 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 2. This is the second screen shot
 
 == Changelog ==
+= 1.4 =
+* Security fix - Not showing the secret key in WP admin if set as a constant. Thank you [JanThiel](https://github.com/JanThiel) for making me aware of this.
+*
 
 = 1.3 =
 * Merged PR allowing to refresh a token. Thanks to Qazsero@github.
