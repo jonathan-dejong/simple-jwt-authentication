@@ -5,8 +5,9 @@
 	do_settings_sections( 'simple_jwt_authentication' );
 	submit_button();
 	?>
-	<h2><?php _e( 'Getting started', 'simple-jwt-authentication' ); ?></h2>
+	<h2><?php esc_html_e( 'Getting started', 'simple-jwt-authentication' ); ?></h2>
 	<p>
-		<?php echo sprintf( __( 'To get started check out the <a href="%s" target="_blank" rel="nofollow">documentation</a>', 'simple-jwt-authentication' ), 'https://github.com/jonathan-dejong/simple-jwt-authentication/wiki/Documentation' ); ?>
+		<?php // Translators: %s is a link to wiki. ?>
+		<?php echo sprintf( __( 'To get started check out the <a href="%s" target="_blank" rel="nofollow">documentation</a>', 'simple-jwt-authentication' ), 'https://github.com/jonathan-dejong/simple-jwt-authentication/wiki/Documentation' ); // phpcs:ignore ?>
 	</p>
 </form>

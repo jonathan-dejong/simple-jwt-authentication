@@ -3,7 +3,7 @@
  * Plugin Name: Simple JWT Authentication
  * Plugin URI:  http://github.com/jonathan-dejong/simple-jwt-authentication
  * Description: Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.
- * Version:     1.2
+ * Version:     1.4.0
  * Author:      Jonathan de Jong
  * Author URI:  http://github.com/jonathan-dejong
  * License:     GPL-2.0+
@@ -14,7 +14,7 @@
  * @since 1.0
  */
 
- // If this file is called directly, abort.
+// If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -32,8 +32,8 @@ class Simple_Jwt_Authentication {
 	 */
 	public function __construct() {
 
-		$this->plugin_name = 'simple-jwt-authentication';
-		$this->plugin_version = '1.2';
+		$this->plugin_name    = 'simple-jwt-authentication';
+		$this->plugin_version = '1.4.0';
 
 		// Load all dependency files.
 		$this->load_dependencies();
@@ -70,7 +70,6 @@ class Simple_Jwt_Authentication {
 
 	}
 
-
 	/**
 	 * Includes a single file located inside /includes.
 	 *
@@ -78,17 +77,14 @@ class Simple_Jwt_Authentication {
 	 * @since 1.0
 	 */
 	private function include_file( $path ) {
-		$plugin_name = $this->plugin_name;
+		$plugin_name    = $this->plugin_name;
 		$plugin_version = $this->plugin_version;
 
 		$includes_dir = trailingslashit( plugin_dir_path( __FILE__ ) . 'includes' );
 		if ( file_exists( $includes_dir . $path ) ) {
-			include_once( $includes_dir . $path );
-		} else {
-			error_log( sprintf( 'Incorrect path %1$s supplied for include_once in %2$s. Full path to file that does not exist: %3$s', $path, $this->plugin_name, $includes_dir . $path ) );
+			include_once $includes_dir . $path;
 		}
 	}
-
 
 	/**
 	 * The code that runs during plugin activation.
@@ -99,7 +95,6 @@ class Simple_Jwt_Authentication {
 
 	}
 
-
 	/**
 	 * The code that runs during plugin deactivation.
 	 *
@@ -108,7 +103,6 @@ class Simple_Jwt_Authentication {
 	public function deactivate() {
 
 	}
-
 
 	/**
 	 * Load the plugin text domain for translation.
@@ -126,7 +120,6 @@ class Simple_Jwt_Authentication {
 	}
 
 }
-
 
 /**
  * Begins execution of the plugin.
