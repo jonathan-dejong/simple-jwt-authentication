@@ -6,10 +6,26 @@
  */
 
 class Simple_Jwt_Authentication_Profile {
-
+	/**
+	 * The plugin name
+	 *
+	 * @var string
+	 */
 	protected $plugin_name;
+
+	/**
+	 * The plugin version
+	 *
+	 * @var string
+	 */
 	protected $plugin_version;
-	protected $user;
+
+	/**
+	 * Contains the users data.
+	 *
+	 * @var object
+	 */
+	protected $user = null;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -20,16 +36,16 @@ class Simple_Jwt_Authentication_Profile {
 		$this->plugin_name    = $plugin_name;
 		$this->plugin_version = $plugin_version;
 
-		add_action( 'init', array( $this, 'set_edited_user' ) );
+		add_action( 'current_screen', array( $this, 'set_edited_user' ), 10 );
 
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'edit_user_profile', array( $this, 'user_token_ui' ), 20 );
 		add_action( 'show_user_profile', array( $this, 'user_token_ui' ), 20 );
-		add_action( 'init', array( $this, 'maybe_revoke_token' ) );
+		add_action( 'current_screen', array( $this, 'maybe_revoke_token' ), 15 );
 		add_action( 'show_user_profile', array( $this, 'maybe_revoke_token' ) );
-		add_action( 'init', array( $this, 'maybe_revoke_all_tokens' ) );
+		add_action( 'current_screen', array( $this, 'maybe_revoke_all_tokens' ), 15 );
 		add_action( 'show_user_profile', array( $this, 'maybe_revoke_all_tokens' ) );
-		add_action( 'init', array( $this, 'maybe_remove_expired_tokens' ) );
+		add_action( 'current_screen', array( $this, 'maybe_remove_expired_tokens' ), 15 );
 		add_action( 'show_user_profile', array( $this, 'maybe_remove_expired_tokens' ) );
 
 	}
@@ -40,6 +56,11 @@ class Simple_Jwt_Authentication_Profile {
 	 * @return void
 	 */
 	public function admin_notices() {
+		// Nonce validation for security.
+		if ( ! isset( $_GET['jwt_nonce'] ) || ! wp_verify_nonce( $_GET['jwt_nonce'], 'simple-jwt-ui-nonce' ) ) {
+			return;
+		}
+
 		if ( empty( $_GET['jwtupdated'] ) ) {
 			return;
 		}
@@ -78,6 +99,10 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_revoke_token() {
+		// Nonce validation for security.
+		if ( ! isset( $_GET['jwt_nonce'] ) || ! wp_verify_nonce( $_GET['jwt_nonce'], 'simple-jwt-ui-nonce' ) ) {
+			return;
+		}
 		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_token'] ) ) {
 			$tokens        = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
 			$request_token = $_GET['revoke_token'];
@@ -111,6 +136,11 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_revoke_all_tokens() {
+		// Nonce validation for security.
+		if ( ! isset( $_GET['jwt_nonce'] ) || ! wp_verify_nonce( $_GET['jwt_nonce'], 'simple-jwt-ui-nonce' ) ) {
+			return;
+		}
+
 		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['revoke_all_tokens'] ) ) {
 			delete_user_meta( $this->user->ID, 'jwt_data' );
 			$current_url = get_home_url() . $_SERVER['REQUEST_URI'];
@@ -135,6 +165,11 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.0
 	 */
 	public function maybe_remove_expired_tokens() {
+		// Nonce validation for security.
+		if ( ! isset( $_GET['jwt_nonce'] ) || ! wp_verify_nonce( $_GET['jwt_nonce'], 'simple-jwt-ui-nonce' ) ) {
+			return;
+		}
+
 		if ( $this->user && current_user_can( 'edit_users' ) && ! empty( $_GET['remove_expired_tokens'] ) ) {
 
 			$tokens = get_user_meta( $this->user->ID, 'jwt_data', true ) ?: false;
@@ -166,15 +201,32 @@ class Simple_Jwt_Authentication_Profile {
 	 * @since 1.1.1
 	 */
 	public function set_edited_user() {
-		$user = null;
-		if ( ! empty( $_GET['user_id'] ) ) {
-			// If ID is incorrect, user will not be found, and function return null
-			$user = get_userdata( (int) $_GET['user_id'] );
-			if ( $user ) {
-				$user = $user->data;
+		// Nonce validation for security.
+		if ( ! isset( $_GET['jwt_nonce'] ) || ! wp_verify_nonce( $_GET['jwt_nonce'], 'simple-jwt-ui-nonce' ) ) {
+			return;
+		}
+
+		$user_id = ( ! empty( $_GET['user_id'] ) ) ? intval( $_GET['user_id'] ) : false;
+
+		// If user ID was not set by $_GET check if we should get it from the current user.
+		if ( false === $user_id ) {
+			$current_screen = get_current_screen();
+			if ( 'profile' === $current_screen->id ) {
+				$user_id = get_current_user_id();
 			}
 		}
-		$this->user = $user;
+
+		// Bail if no user id can be found.
+		if ( false === $user_id ) {
+			return;
+		}
+
+		// Get user data and save to our parameter.
+		$user = get_userdata( (int) $user_id );
+		if ( false !== $user ) {
+			$user       = $user->data;
+			$this->user = $user;
+		}
 	}
 }
 new Simple_Jwt_Authentication_Profile( $plugin_name, $plugin_version );

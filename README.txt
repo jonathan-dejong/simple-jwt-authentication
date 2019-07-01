@@ -4,7 +4,7 @@ Donate link: http://fancy.to/scbk86
 Tags: wp-rest, api, jwt, authentication, access
 Requires at least: 3.0.1
 Tested up to: 4.8
-Stable tag: 1.4
+Stable tag: 1.4.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -16,24 +16,19 @@ Easily extends the WP REST API using JSON Web Tokens Authentication as an authen
 
 == Installation ==
 
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
+1. Upload `simple-jwt-authentication` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to the settings page under Settings > Simple JWT Authentication to setup the plugin.
-
-== Screenshots ==
-
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
 
 == Changelog ==
 = 1.4 =
 * Security fix - Not showing the secret key in WP admin if set as a constant. Thank you [JanThiel](https://github.com/JanThiel) for making me aware of this.
-*
+* Added the user data to the expire filter to allow for user specific expire times.
+* Added a whole bunch of escaping and security improvements like nonces etc. Basically making the plugin follow WordPress-Extra standard instead of previous WordPress-Core.
+* Bugfix - Fixed some issues with the token UI in profile pages. Thanks to [gordielachance](https://github.com/gordielachance) for making me aware of this.
 
 = 1.3 =
 * Merged PR allowing to refresh a token. Thanks to Qazsero@github.
 
-== Upgrade Notice ==
+= 1.0 =
+* Initial version.
