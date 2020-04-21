@@ -187,7 +187,7 @@ class Simple_Jwt_Authentication_Rest {
 		}
 
 		// Valid credentials, the user exists create the according Token.
-		$issued_at  = time();
+		$issued_at  = current_time( 'timestamp' );
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
 		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at, $user );
 		$uuid       = $this->generate_uuid();
@@ -217,7 +217,7 @@ class Simple_Jwt_Authentication_Rest {
 			'expires'   => $expire,
 			'ip'        => $user_ip,
 			'ua'        => $_SERVER['HTTP_USER_AGENT'],
-			'last_used' => time(),
+			'last_used' => current_time( 'timestamp' ),
 		);
 		update_user_meta( $user->data->ID, 'jwt_data', apply_filters( 'simple_jwt_auth_save_user_data', $jwt_data ) );
 
@@ -381,7 +381,7 @@ class Simple_Jwt_Authentication_Rest {
 			foreach ( $jwt_data as $key => $token_data ) {
 				if ( $token_data['uuid'] === $token->uuid ) {
 					$user_ip                       = ! empty( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : __( 'Unknown', 'simple-jwt-authentication' );
-					$jwt_data[ $key ]['last_used'] = time();
+					$jwt_data[ $key ]['last_used'] = current_time( 'timestamp' );
 					$jwt_data[ $key ]['ua']        = $_SERVER['HTTP_USER_AGENT'];
 					$jwt_data[ $key ]['ip']        = $user_ip;
 					$valid_token                   = true;
@@ -452,7 +452,7 @@ class Simple_Jwt_Authentication_Rest {
 		$user = new WP_User( $token->data->user->id );
 
 		// The user exists create the according Token.
-		$issued_at  = time();
+		$issued_at  = current_time( 'timestamp' );
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
 		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at, $user );
 		$uuid       = wp_generate_uuid4();
@@ -482,7 +482,7 @@ class Simple_Jwt_Authentication_Rest {
 			'expires'   => $expire,
 			'ip'        => $user_ip,
 			'ua'        => $_SERVER['HTTP_USER_AGENT'],
-			'last_used' => time(),
+			'last_used' => current_time( 'timestamp' ),
 		);
 		update_user_meta( $user->data->ID, 'jwt_data', apply_filters( 'simple_jwt_auth_save_user_data', $jwt_data ) );
 
