@@ -140,14 +140,13 @@ class Simple_Jwt_Authentication_Rest {
 	* @return String UUID
 	*/
 	private function generate_uuid() {
-	  if( function_exists( 'wp_generate_uuid4' ) ) {
-	    //Use the built in UUID generator
-	    return wp_generate_uuid4();
-	  }
-	  else {
-	    //Old version of WP, use a different UUID generator
-	    return Uuid::uuid4()->toString();
-	  }
+		if ( function_exists( 'wp_generate_uuid4' ) ) {
+			//Use the built in UUID generator
+			return wp_generate_uuid4();
+		} else {
+			//Old version of WP, use a different UUID generator
+			return Uuid::uuid4()->toString();
+		}
 	}
 
 	/**
@@ -190,8 +189,8 @@ class Simple_Jwt_Authentication_Rest {
 		// Valid credentials, the user exists create the according Token.
 		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
-		$expire = apply_filters( 'jwt_auth_expire', $issued_at + (DAY_IN_SECONDS * 7), $issued_at );
-		$uuid = $this->generate_uuid();
+		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at, $user );
+		$uuid       = $this->generate_uuid();
 
 		$token = array(
 			'uuid' => $uuid,
@@ -269,7 +268,7 @@ class Simple_Jwt_Authentication_Rest {
 		$token = $this->validate_token( false );
 
 		if ( is_wp_error( $token ) ) {
-			if ( $token->get_error_code() != 'jwt_auth_no_auth_header' ) {
+			if ( $token->get_error_code() !== 'jwt_auth_no_auth_header' ) {
 				// If there is a error, store it to show it after see rest_pre_dispatch
 				$this->jwt_error = $token;
 				return $user;
@@ -344,7 +343,7 @@ class Simple_Jwt_Authentication_Rest {
 		try {
 			$token = JWT::decode( $token, $secret_key, array( 'HS256' ) );
 			// The Token is decoded now validate the iss
-			if ( get_bloginfo( 'url' ) != $token->iss ) {
+			if ( get_bloginfo( 'url' ) !== $token->iss ) {
 				// The iss do not match, return error
 				return new WP_Error(
 					'jwt_auth_bad_iss',
@@ -377,9 +376,10 @@ class Simple_Jwt_Authentication_Rest {
 				);
 			}
 
+			$valid_token = false;
 			// Loop through and check wether we have the current token uuid in the users meta.
 			foreach ( $jwt_data as $key => $token_data ) {
-				if ( $token_data['uuid'] == $token->uuid ) {
+				if ( $token_data['uuid'] === $token->uuid ) {
 					$user_ip                       = ! empty( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : __( 'Unknown', 'simple-jwt-authentication' );
 					$jwt_data[ $key ]['last_used'] = time();
 					$jwt_data[ $key ]['ua']        = $_SERVER['HTTP_USER_AGENT'];
@@ -387,11 +387,10 @@ class Simple_Jwt_Authentication_Rest {
 					$valid_token                   = true;
 					break;
 				}
-				$valid_token = false;
 			}
 
 			// Found no valid token. Return error.
-			if ( false == $valid_token ) {
+			if ( false === $valid_token ) {
 				return new WP_Error(
 					'jwt_auth_token_revoked',
 					__( 'Token has been revoked.', 'simple-jwt-authentication' ),
@@ -406,12 +405,12 @@ class Simple_Jwt_Authentication_Rest {
 				return $token;
 			}
 			// If the output is true return an answer to the request to show it.
-			 return array(
-				 'code' => 'jwt_auth_valid_token',
-				 'data' => array(
-					 'status' => 200,
-				 ),
-			 );
+			return array(
+				'code' => 'jwt_auth_valid_token',
+				'data' => array(
+					'status' => 200,
+				),
+			);
 		} catch ( Exception $e ) {
 			// Something is wrong trying to decode the token, send back the error.
 			return new WP_Error(
@@ -450,12 +449,12 @@ class Simple_Jwt_Authentication_Rest {
 			);
 		}
 
-		$user = new WP_User($token->data->user->id);
+		$user = new WP_User( $token->data->user->id );
 
 		// The user exists create the according Token.
 		$issued_at  = time();
 		$not_before = apply_filters( 'jwt_auth_not_before', $issued_at );
-		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at );
+		$expire     = apply_filters( 'jwt_auth_expire', $issued_at + ( DAY_IN_SECONDS * 7 ), $issued_at, $user );
 		$uuid       = wp_generate_uuid4();
 
 		$token = array(
@@ -511,7 +510,7 @@ class Simple_Jwt_Authentication_Rest {
 		$token = $this->validate_token( false );
 
 		if ( is_wp_error( $token ) ) {
-			if ( $token->get_error_code() != 'jwt_auth_no_auth_header' ) {
+			if ( $token->get_error_code() !== 'jwt_auth_no_auth_header' ) {
 				// If there is a error, store it to show it after see rest_pre_dispatch.
 				$this->jwt_error = $token;
 				return false;
@@ -525,7 +524,7 @@ class Simple_Jwt_Authentication_Rest {
 
 		if ( $tokens ) {
 			foreach ( $tokens as $key => $token_data ) {
-				if ( $token_data['uuid'] == $token_uuid ) {
+				if ( $token_data['uuid'] === $token_uuid ) {
 					unset( $tokens[ $key ] );
 					update_user_meta( $token->data->user->id, 'jwt_data', $tokens );
 					return array(
@@ -615,6 +614,7 @@ class Simple_Jwt_Authentication_Rest {
 
 		$message  = __( 'Someone requested that the password be reset for the following account:' ) . "\r\n\r\n";
 		$message .= network_home_url( '/' ) . "\r\n\r\n";
+		// translators: %s is the users login name.
 		$message .= sprintf( __( 'Username: %s' ), $user_login ) . "\r\n\r\n";
 		$message .= __( 'If this was a mistake, just ignore this email and nothing will happen.' ) . "\r\n\r\n";
 		$message .= __( 'To reset your password, visit the following address:' ) . "\r\n\r\n";
@@ -627,14 +627,14 @@ class Simple_Jwt_Authentication_Rest {
 			// we want to reverse this for the plain text arena of emails.
 			$blogname = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
 		}
-
+		// translators: %s is the sites name (blogname)
 		$title = sprintf( __( '[%s] Password Reset' ), $blogname );
 
 		$title   = apply_filters( 'retrieve_password_title', $title );
 		$message = apply_filters( 'retrieve_password_message', $message, $key );
 
 		if ( $message && ! wp_mail( $user_email, $title, $message ) ) {
-			wp_die( __( 'The e-mail could not be sent.' ) . "<br />\n" . __( 'Possible reason: your host may have disabled the mail() function...' ) );
+			wp_die( __( 'The e-mail could not be sent.' ) . "<br />\n" . __( 'Possible reason: your host may have disabled the mail() function...' ) ); // phpcs:ignore
 		}
 
 		return array(

@@ -52,7 +52,7 @@ class Simple_Jwt_Authentication_Api {
 		if ( defined( 'SIMPLE_JWT_AUTHENTICATION_SECRET_KEY' ) ) {
 			return SIMPLE_JWT_AUTHENTICATION_SECRET_KEY;
 		} else {
-			$settings = Simple_Jwt_Authentication_Api::get_db_settings();
+			$settings = self::get_db_settings();
 			if ( $settings ) {
 				return $settings['secret_key'];
 			}
@@ -71,7 +71,7 @@ class Simple_Jwt_Authentication_Api {
 		if ( defined( 'SIMPLE_JWT_AUTHENTICATION_CORS_ENABLE' ) ) {
 			return SIMPLE_JWT_AUTHENTICATION_CORS_ENABLE;
 		} else {
-			$settings = Simple_Jwt_Authentication_Api::get_db_settings();
+			$settings = self::get_db_settings();
 			if ( $settings ) {
 				return $settings['enable_cors'];
 			}
